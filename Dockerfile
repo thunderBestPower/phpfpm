@@ -38,8 +38,8 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
-RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
-USER appuser
+#RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
+#USER appuser
 
 VOLUME ["/app"]
 
