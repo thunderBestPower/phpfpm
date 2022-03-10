@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:8.0-fpm
 
 ENV MAX_UPLOAD_SIZE 2M
 ENV POST_MAX_SIZE 8M
