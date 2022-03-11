@@ -11,10 +11,10 @@ RUN apt-get update \
     gnupg gnupg1 gnupg2 \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
-    && docker-php-ext-install opcache pdo_mysql gd zip intl xmlrpc \
-    && pecl install redis-5.1.1 \
+    && docker-php-ext-install opcache pdo_mysql gd zip intl xmlrpc\
+    && pecl install redis-5.3.7 \
     && pecl install igbinary \
-    && pecl install xdebug-2.9.0 \
+    && pecl install xdebug-3.1.3 \
     && pecl install apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
