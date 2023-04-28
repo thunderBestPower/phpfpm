@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7.4-fpm
 
 ENV MAX_UPLOAD_SIZE 2M
 ENV POST_MAX_SIZE 8M
@@ -19,6 +19,7 @@ RUN apt-get update \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+
 ADD /resources/* /resources/
 WORKDIR /resources
 COPY /resources/php.ini $PHP_INI_DIR/conf.d/
@@ -37,8 +38,6 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
-RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
-USER appuser
 
 VOLUME ["/app"]
 
