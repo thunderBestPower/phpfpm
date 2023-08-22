@@ -38,6 +38,8 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
+# Credo che bisogni aggiungere il gruppo www-data all'utente root
+RUN usermod -aG www-data root
 
 VOLUME ["/app"]
 
