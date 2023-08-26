@@ -12,4 +12,10 @@ if [ 0 == "${ENABLE_XDEBUG}" ]; then
     fi
 fi
 
+#Configurazione di sap client hana
+echo "[${SAP_HANA_NAME}]" > /etc/odbc.ini && \
+echo "" >> /etc/odbc.ini && \
+echo "Driver=/home/appuser/sap/hdbclient/libodbcHDB.so" >> /etc/odbc.ini && \
+echo "ServerNode=${SAP_HANA_IP}:${SAP_HANA_PORT}" >> /etc/odbc.ini
+
 /usr/bin/supervisord
