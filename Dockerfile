@@ -9,9 +9,6 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip \
     gnupg gnupg1 gnupg2 \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh freetds-bin freetds-dev freetds-common \
     && ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/ \
@@ -20,12 +17,13 @@ RUN apt-get update \
     && pecl install igbinary \
     && pecl install xdebug-2.9.0 \
     && pecl install apcu \
-    && docker-php-ext-enable redis igbinary xdebug apcu \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd
+    && docker-php-ext-enable redis igbinary xdebug apcu
+
+RUN apt-get install unixodbc unixodbc-dev -y
+RUN pecl install sqlsrv-5.9.0
+RUN pecl install pdo_sqlsrv-5.9.0
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-
 ADD /resources/* /resources/
 WORKDIR /resources
 COPY /resources/php.ini $PHP_INI_DIR/conf.d/
