@@ -40,7 +40,7 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN mkdir -p var/log \
-#    && chmod 777 var/log
+    && chmod 777 var/log \
     && chown root:www-data var/log
 
 RUN chmod g+w /usr/local/etc/php/conf.d
