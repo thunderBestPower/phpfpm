@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 ENV MAX_UPLOAD_SIZE 2M
 ENV POST_MAX_SIZE 8M
@@ -15,9 +15,9 @@ RUN apt-get update \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
     && docker-php-ext-install opcache pdo_pgsql gd zip intl\
-    && pecl install redis-5.3.7 \
+    && pecl install redis \
     && pecl install igbinary \
-    && pecl install xdebug-3.1.3 \
+    && pecl install xdebug \
     && pecl install apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
@@ -38,6 +38,10 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 
 RUN mkdir /app
 WORKDIR /app
+
+RUN mkdir -p var/log \
+#    && chmod 777 var/log
+    && chown root:www-data var/log
 
 RUN chmod g+w /usr/local/etc/php/conf.d
 

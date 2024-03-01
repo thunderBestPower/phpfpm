@@ -1,4 +1,4 @@
-# PHP-FPM 8.1
+# PHP-FPM 8.2
 
 - Include connect Postgres
 - Xdebug
