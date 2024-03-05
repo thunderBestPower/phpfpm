@@ -28,6 +28,35 @@ COPY /resources/php.ini $PHP_INI_DIR/conf.d/
 RUN cat /resources/www.conf >> /usr/local/etc/php-fpm.d/www.conf
 COPY /resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+RUN mkdir /opt/ibm
+COPY /resources/v11.1.4fp4a_linuxx64_dsdriver.tar.gz /opt/ibm
+WORKDIR /opt/ibm
+
+#RUN tar -xvf v11.1.4fp4a_linuxx64_dsdriver.tar.gz
+#WORKDIR /opt/ibm/dsdriver
+#RUN chmod 755 installDSDriver
+#RUN ksh installDSDriver
+#RUN wget https://pecl.php.net/get/ibm_db2-2.0.8.tgz
+#RUN tar -xvf ibm_db2-2.0.8.tgz
+#RUN cd ibm_db2-2.0.8
+#RUN phpize --clean
+#RUN phpize
+#RUN ./configure --enable-debug -with-IBM_DB2=/opt/ibm/dsdriver
+#RUN make clean
+#RUN make
+#RUN make install
+#RUN echo "extension=ibm_db2.so" >> $PHP_INI_DIR/php.ini
+
+RUN tar -xvf v11.1.4fp4a_linuxx64_dsdriver.tar.gz
+WORKDIR /opt/ibm/dsdriver
+RUN phpize --clean
+RUN phpize
+RUN ./configure --enable-debug -with-IBM_DB2=/opt/ibm/dsdriver
+RUN make clean
+RUN make
+RUN make install
+RUN echo "extension=ibm_db2.so" >> $PHP_INI_DIR/php.ini
+
 RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
    mv composer.phar /usr/local/bin/composer
 
