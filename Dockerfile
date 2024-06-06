@@ -39,11 +39,10 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 RUN mkdir /app
 WORKDIR /app
 
-RUN mkdir -p var/log \
-    && chmod 777 var/log \
-    && chown root:www-data var/log
-
 RUN chmod g+w /usr/local/etc/php/conf.d
+
+RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
+USER appuser
 
 VOLUME ["/app"]
 
