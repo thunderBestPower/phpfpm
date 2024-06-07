@@ -54,8 +54,14 @@ WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
 
-RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
-USER appuser
+# Permessi
+RUN groupadd docker
+RUN useradd -m -r -u 1999 appuser
+RUN usermod -aG sudo appuser
+RUN usermod -aG www-data appuser
+RUN usermod -aG root appuser
+RUN usermod -aG docker appuser
+USER appuser:www-data
 
 VOLUME ["/app"]
 
