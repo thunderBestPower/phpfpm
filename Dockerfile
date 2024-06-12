@@ -54,10 +54,10 @@ WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
 
-RUN usermod -g www-data -g sudo root
-USER root
-#RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
-#USER appuser
+#RUN usermod -aG www-data root
+#USER root
+RUN useradd -m -G www-data appuser
+USER appuser:www-data
 
 VOLUME ["/app"]
 
