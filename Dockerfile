@@ -1,11 +1,11 @@
 FROM php:8.2-fpm
 
-ENV MAX_UPLOAD_SIZE 2M
-ENV POST_MAX_SIZE 8M
+ENV MAX_UPLOAD_SIZE=2M
+ENV POST_MAX_SIZE=8M
 # https://xdebug.org/docs/all_settings#start_with_request
-ENV ENABLE_XDEBUG no
+ENV ENABLE_XDEBUG=no
 # Off o debug https://xdebug.org/docs/all_settings#mode
-ENV ENABLE_MODE debug
+ENV ENABLE_MODE=debug
 
 WORKDIR /
 RUN apt-get update \
@@ -41,8 +41,13 @@ WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
 
-RUN useradd -m -r -u 1000 -g www-data -g sudo -g root appuser
-USER appuser
+# Permessi
+RUN groupadd docker
+RUN usermod -aG docker root
+RUN usermod -aG www-data root
+RUN usermod -aG root root
+
+USER root
 
 VOLUME ["/app"]
 
