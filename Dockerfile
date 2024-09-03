@@ -43,6 +43,7 @@ RUN chmod g+w /usr/local/etc/php/conf.d
 
 # Permessi
 RUN groupadd docker
+RUN usermod -aG sudo root
 RUN usermod -aG docker root
 RUN usermod -aG www-data root
 RUN usermod -aG root root
