@@ -43,12 +43,13 @@ RUN chmod g+w /usr/local/etc/php/conf.d
 
 # Permessi
 RUN groupadd docker
-RUN usermod -aG sudo root
-RUN usermod -aG docker root
-RUN usermod -aG www-data root
-RUN usermod -aG root root
+RUN useradd -m -r -u 1999 appuser
+RUN usermod -aG sudo appuser
+RUN usermod -aG docker appuser
+RUN usermod -aG www-data appuser
+RUN usermod -aG root appuser
 
-USER root
+USER appuser
 
 VOLUME ["/app"]
 
