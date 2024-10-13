@@ -8,7 +8,7 @@ WORKDIR /
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip \
-    gnupg gnupg1 gnupg2 \
+    gnupg gnupg1 gnupg2 ffmpeg \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
     && docker-php-ext-install opcache pdo_mysql gd zip intl xmlrpc \
