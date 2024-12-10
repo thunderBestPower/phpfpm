@@ -14,7 +14,7 @@ RUN apt-get update \
     gnupg gnupg1 gnupg2 \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
-    && docker-php-ext-install opcache pdo_pgsql gd zip intl\
+    && docker-php-ext-install opcache pdo_pgsql gd zip intl ftp \
     && pecl install redis \
     && pecl install igbinary \
     && pecl install xdebug \
