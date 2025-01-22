@@ -11,8 +11,8 @@ WORKDIR /
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip \
-    gnupg gnupg1 gnupg2 \
-    supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
+    gnupg gnupg1 gnupg2 ffmpeg\
+    supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh freetds-bin freetds-dev freetds-common \
     && ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/ \
     && docker-php-ext-install opcache pdo_pgsql pdo_dblib gd zip intl\
