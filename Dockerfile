@@ -1,11 +1,11 @@
 FROM php:8.2-fpm
 
-ENV MAX_UPLOAD_SIZE=2M
-ENV POST_MAX_SIZE=8M
+ENV MAX_UPLOAD_SIZE 2M
+ENV POST_MAX_SIZE 8M
 # https://xdebug.org/docs/all_settings#start_with_request
-ENV ENABLE_XDEBUG=no
+ENV ENABLE_XDEBUG no
 # Off o debug https://xdebug.org/docs/all_settings#mode
-ENV ENABLE_MODE=debug
+ENV ENABLE_MODE debug
 
 WORKDIR /
 RUN apt-get update \
