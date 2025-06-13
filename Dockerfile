@@ -9,11 +9,12 @@ ENV ENABLE_MODE debug
 
 WORKDIR /
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
+    && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils fish \
     build-essential locales acl mailutils wget zip unzip \
     gnupg gnupg1 gnupg2 ffmpeg\
     supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh freetds-bin freetds-dev freetds-common \
+    cups-client cups-bsd \
     && ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/ \
     && docker-php-ext-install opcache pdo_pgsql pdo_dblib gd zip intl\
     && pecl install redis \
@@ -56,11 +57,13 @@ RUN chmod g+w /usr/local/etc/php/conf.d
 
 # Permessi
 RUN groupadd docker
-RUN useradd -m -r -u 1999 appuser
+RUN useradd -m -r -u 1999 -s /usr/bin/fish appuser
 RUN usermod -aG sudo appuser
 RUN usermod -aG docker appuser
 RUN usermod -aG www-data appuser
 RUN usermod -aG root appuser
+# Per stampante
+RUN usermod -aG lp appuser
 
 USER appuser
 
