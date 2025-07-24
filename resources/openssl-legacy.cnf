@@ -1,0 +1,19 @@
+# abilita il provider legacy di OpenSSL3
+openssl_conf = openssl_init
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+base    = base_sect
+default = default_sect
+legacy  = legacy_sect
+
+[default_sect]
+activate = 1
+
+[legacy_sect]
+activate = 1
+
+# poi includi il file originale per ereditare tutte le altre sezioni
+.include /etc/ssl/openssl.cnf.orig
