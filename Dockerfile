@@ -10,7 +10,7 @@ ENV ENABLE_MODE=debug
 WORKDIR /
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
-    build-essential locales acl mailutils wget zip unzip \
+    build-essential locales acl mailutils wget zip unzip fish \
     gnupg gnupg1 gnupg2 ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
@@ -54,4 +54,4 @@ USER appuser
 VOLUME ["/app"]
 
 EXPOSE 9000
-CMD ["bash", "/resources/entrypoint.sh"]
+CMD ["bash", "/resources/entrypoint.sh", "fish"]
