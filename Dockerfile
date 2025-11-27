@@ -47,8 +47,7 @@ ARG GID=1000
 
 RUN groupadd -g "${GID}" appgroup \
     && useradd -m -u "${UID}" -g appgroup appuser \
-    && usermod -aG www-data appuser \
-    && chown appuser:appgroup /usr/local/etc/php/conf.d/php.ini
+    && usermod -aG www-data appuser 
 # Fine permessi
 
 USER appuser
@@ -56,4 +55,4 @@ USER appuser
 VOLUME ["/app"]
 
 EXPOSE 9000
-CMD ["bash", "/resources/entrypoint.sh", "fish"]
+CMD ["bash", "/resources/entrypoint.sh"]
