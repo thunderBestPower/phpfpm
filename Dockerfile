@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 ENV MAX_UPLOAD_SIZE=2M
 ENV POST_MAX_SIZE=8M
@@ -14,11 +14,8 @@ RUN apt-get update \
     gnupg gnupg1 gnupg2 ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
-    && docker-php-ext-install opcache pdo_pgsql gd zip intl ftp \
-    && pecl install redis \
-    && pecl install igbinary \
-    && pecl install xdebug \
-    && pecl install apcu \
+    && docker-php-ext-install opcache pdo_pgsql gd zip intl ftp sockets bcmath \
+    && pecl install redis igbinary xdebug apcu php_opcua \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
@@ -41,16 +38,23 @@ WORKDIR /app
 
 RUN chmod g+w /usr/local/etc/php/conf.d
 
-# Permessi
-RUN groupadd docker
-RUN useradd -m -r -u 1999 appuser
-RUN usermod -aG sudo appuser
-RUN usermod -aG docker appuser
-RUN usermod -aG www-data appuser
-RUN usermod -aG root appuser
+# Definiamo degli ARG con valori di default, che potrai sovrascrivere nel docker-compose
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g "${GID}" appgroup \
+    && useradd -m -l -u "${UID}" -g appgroup appuser \
+    && usermod -aG www-data appuser
+
+# Permettiamo ad appuser di gestire le configurazioni PHP (necessario per il tuo entrypoint)
+RUN chown -R appuser:appgroup /usr/local/etc/php/conf.d \
+    && chmod -R 775 /usr/local/etc/php/conf.d \
+    && chown -R appuser:appgroup /app
+
+# Se l'entrypoint deve modificare anche il php.ini principale:
+RUN chown appuser:appgroup /usr/local/etc/php/php.ini
 
 USER appuser
-
 VOLUME ["/app"]
 
 EXPOSE 9000
