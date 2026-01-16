@@ -10,13 +10,17 @@ ENV ENABLE_MODE=debug
 WORKDIR /
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
-    build-essential locales acl mailutils wget zip unzip fish \
-    gnupg gnupg1 gnupg2 ffmpeg \
+    build-essential locales acl mailutils wget zip unzip fish
+
+RUN apt-get install -y --no-install-recommends gnupg gnupg1 gnupg2 ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
     && docker-php-ext-install opcache pdo_pgsql gd zip intl ftp sockets bcmath \
-    && pecl install redis igbinary xdebug apcu php_opcua \
+    && pecl install redis igbinary xdebug apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu
+
+RUN apt-get install -y python3 python3-pip python3-dev
+RUN pip3 install --no-cache-dir --break-system-packages opcua
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 ADD /resources/* /resources/
