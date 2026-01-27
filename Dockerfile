@@ -19,7 +19,15 @@ RUN apt-get install -y --no-install-recommends gnupg gnupg1 gnupg2 ffmpeg \
     && pecl install redis igbinary xdebug apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
-RUN apt-get install -y python3 python3-pip python3-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-cryptography \
+    python3-setuptools \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Installiamo opcua ignorando le dipendenze che abbiamo già messo via apt
 RUN pip3 install --no-cache-dir --break-system-packages opcua
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
@@ -62,4 +70,4 @@ USER appuser
 VOLUME ["/app"]
 
 EXPOSE 9000
-CMD ["bash", "/resources/entrypoint.sh", "fish"]
+CMD ["bash", "/resources/entrypoint.sh"]
