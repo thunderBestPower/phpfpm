@@ -65,16 +65,23 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 RUN mkdir /app
 WORKDIR /app
 
-# Permessi
+RUN chmod g+w /usr/local/etc/php/conf.d
+
+# Definisco degli ARG con valori di default, che posso sovrascrivere nel docker-compose
 ARG UID=1000
 ARG GID=1000
 
 RUN groupadd -g "${GID}" appgroup \
-    && useradd -m -u "${UID}" -g appgroup appuser \
-    && usermod -aG www-data appuser \
-    && chown -R appuser:appgroup /usr/local/etc/php/conf.d \
-    && chmod -R u+rw,g+rw /usr/local/etc/php/conf.d
-# Fine permessi
+    && useradd -m -l -u "${UID}" -g appgroup appuser \
+    && usermod -aG www-data appuser
+
+#
+RUN chown -R appuser:appgroup /usr/local/etc/php/conf.d \
+    && chmod -R 775 /usr/local/etc/php/conf.d \
+    && chown -R appuser:appgroup /app
+
+#
+RUN chown appuser:appgroup /usr/local/etc/php/php.ini
 
 USER appuser
 
