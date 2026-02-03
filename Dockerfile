@@ -51,17 +51,16 @@ WORKDIR /app
 RUN chmod g+w /usr/local/etc/php/conf.d
 
 # Definisco degli ARG con valori di default, che posso sovrascrivere nel docker-compose
-ARG UID=1000
-ARG GID=1000
+ARG UID=1001
+ARG GID=1001
 
-RUN groupadd -g "${GID}" appgroup \
-    && useradd -m -l -u "${UID}" -g appgroup appuser \
-    && usermod -aG www-data appuser
+RUN groupadd -g ${GID} appgroup && \
+    useradd -l -u ${UID} -g appgroup -m -s /bin/bash appuser && \
+    usermod -aG www-data appuser
 
 #
-RUN chown -R appuser:appgroup /usr/local/etc/php/conf.d \
-    && chmod -R 775 /usr/local/etc/php/conf.d \
-    && chown -R appuser:appgroup /app
+RUN chown -R appuser:appgroup /usr/local/etc/php/conf.d && \
+    chown appuser:appgroup /usr/local/etc/php/php.ini
 
 #
 RUN chown appuser:appgroup /usr/local/etc/php/php.ini
