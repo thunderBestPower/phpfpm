@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:7.4-fpm
 
 ENV MAX_UPLOAD_SIZE=2M
 ENV POST_MAX_SIZE=8M
@@ -18,21 +18,19 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
 RUN docker-php-ext-install opcache pdo_pgsql pdo_dblib gd zip intl \
     && pecl install redis \
     && pecl install igbinary \
-    && pecl install xdebug \
+    && pecl install xdebug-3.1.6 \
     && pecl install apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu
 
-ENV ACCEPT_EULA=Y
 
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
-RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
-RUN apt-get update
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-RUN apt-get install unixodbc unixodbc-dev -y
-RUN pecl install sqlsrv
-RUN pecl install pdo_sqlsrv
-RUN docker-php-ext-enable sqlsrv pdo_sqlsrv
+# Correzione Driver Microsoft per Debian (non Ubuntu)
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
 
+RUN pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1 \
+    && docker-php-ext-enable sqlsrv pdo_sqlsrv
 # — Abilita il provider legacy di OpenSSL3 senza toccare il file di sistema —
 # 1) Copia il tuo snippet immutato
 #COPY resources/openssl-legacy.cnf /etc/ssl/openssl-legacy.cnf
