@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.2-fpm
 
 ENV MAX_UPLOAD_SIZE=2M
 ENV POST_MAX_SIZE=8M
@@ -25,9 +25,9 @@ RUN docker-php-ext-install opcache pdo_pgsql pdo_dblib gd zip intl \
 
 # Correzione Driver Microsoft per Debian (non Ubuntu)
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
 
 RUN pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1 \
     && docker-php-ext-enable sqlsrv pdo_sqlsrv
