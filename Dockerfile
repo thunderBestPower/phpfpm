@@ -8,6 +8,7 @@ WORKDIR /
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip \
+    libmagickwand-dev imagemagick ghostscript \
     gnupg gnupg1 gnupg2 ffmpeg \
     supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
@@ -16,7 +17,10 @@ RUN apt-get update \
     && pecl install igbinary \
     && pecl install xdebug-2.9.0 \
     && pecl install apcu \
-    && docker-php-ext-enable redis igbinary xdebug apcu
+    && pecl install imagick \
+    && docker-php-ext-enable redis igbinary xdebug apcu imagick
+
+RUN sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
