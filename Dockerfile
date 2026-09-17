@@ -2,6 +2,8 @@ FROM php:8.4-fpm
 
 ENV MAX_UPLOAD_SIZE=2M
 ENV POST_MAX_SIZE=8M
+# default di PHP, sovrascrivibile dal docker-compose del progetto
+ENV MEMORY_LIMIT=128M
 # https://xdebug.org/docs/all_settings#start_with_request
 ENV ENABLE_XDEBUG=no
 # Off o debug https://xdebug.org/docs/all_settings#mode
