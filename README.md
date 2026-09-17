@@ -10,6 +10,7 @@
 | Variabile         | Default | Descrizione                                                               |
 |-------------------|---------|---------------------------------------------------------------------------|
 | `MEMORY_LIMIT`    | `128M`  | `memory_limit` di PHP (`-1` = nessun limite)                              |
+| `PM_MAX_CHILDREN` | `5`     | `pm.max_children` di php-fpm: richieste servite in parallelo             |
 | `MAX_UPLOAD_SIZE` | `2M`    | `upload_max_filesize`                                                     |
 | `POST_MAX_SIZE`   | `8M`    | `post_max_size`                                                           |
 | `ENABLE_XDEBUG`   | `no`    | `xdebug.start_with_request`: `yes`, `trigger` oppure `no`/`0` (rimuove Xdebug) |
