@@ -9,11 +9,10 @@ ENV ENABLE_XDEBUG=no
 # Off o debug https://xdebug.org/docs/all_settings#mode
 ENV ENABLE_MODE=debug
 
-WORKDIR /
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
+    && apt-get install -y --no-install-recommends vim nano curl git apt-utils \
     build-essential locales acl mailutils wget zip unzip fish \
-    gnupg gnupg1 gnupg2 ffmpeg \
+    gnupg ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
     && docker-php-ext-install opcache pdo_pgsql gd zip intl ftp \
@@ -21,46 +20,34 @@ RUN apt-get update \
     && pecl install igbinary \
     && pecl install xdebug \
     && pecl install apcu \
-    && docker-php-ext-enable redis igbinary xdebug apcu
+    && docker-php-ext-enable redis igbinary xdebug apcu \
+    && rm -rf /var/lib/apt/lists/* /tmp/pear
 
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-ADD /resources/* /resources/
-WORKDIR /resources
-COPY /resources/php.ini $PHP_INI_DIR/conf.d/
-RUN cat /resources/www.conf >> /usr/local/etc/php-fpm.d/www.conf
-COPY /resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
-   mv composer.phar /usr/local/bin/composer
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && echo "it_IT.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen
 
-RUN rm -rf /var/lib/apt/lists/*
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    echo "it_IT.UTF-8 UTF-8" >> /etc/locale.gen && \
-    locale-gen
-
-RUN mkdir /app
-WORKDIR /app
-
-RUN chmod g+w /usr/local/etc/php/conf.d
+COPY resources/ /resources/
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
+    && cp /resources/php.ini "$PHP_INI_DIR/conf.d/" \
+    && cat /resources/www.conf >> /usr/local/etc/php-fpm.d/www.conf \
+    && cp /resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Definiamo degli ARG con valori di default, che potrai sovrascrivere nel docker-compose
 ARG UID=1000
 ARG GID=1000
 
+# appuser deve poter modificare conf.d dall'entrypoint (sed su php.ini, rimozione xdebug)
 RUN groupadd -g "${GID}" appgroup \
-    && useradd -m -l -u "${UID}" -g appgroup appuser \
-    && usermod -aG www-data appuser
+    && useradd -m -l -u "${UID}" -g appgroup -s /usr/bin/fish appuser \
+    && usermod -aG www-data appuser \
+    && mkdir /app \
+    && chown -R appuser:appgroup /usr/local/etc/php/conf.d /app \
+    && chmod -R 775 /usr/local/etc/php/conf.d
 
-# Permettiamo ad appuser di gestire le configurazioni PHP (necessario per il tuo entrypoint)
-RUN chown -R appuser:appgroup /usr/local/etc/php/conf.d \
-    && chmod -R 775 /usr/local/etc/php/conf.d \
-    && chown -R appuser:appgroup /app
-
-# Se l'entrypoint deve modificare anche il php.ini principale:
-RUN chown appuser:appgroup /usr/local/etc/php/php.ini
-
-RUN usermod -s /usr/bin/fish appuser
-
+WORKDIR /app
 USER appuser
 
 VOLUME ["/app"]
