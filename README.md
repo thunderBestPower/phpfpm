@@ -2,7 +2,7 @@
 
 - Include connect Postgres
 - Xdebug
-- Estensioni: opcache, pdo_pgsql, gd, zip, intl, ftp, redis, igbinary, apcu
+- Estensioni: opcache, pdo_pgsql, gd (JPEG, PNG, WebP), exif, zip, intl, ftp, redis, igbinary, apcu
 - Composer 2, supervisor, fish
 
 ## Variabili d'ambiente
