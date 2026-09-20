@@ -6,14 +6,22 @@ ENV ENABLE_XDEBUG=0
 ENV DISPLAY_ERRORS=0
 
 WORKDIR /
+# Bullseye e' fuori supporto: deb.debian.org serve ancora gli indici di
+# bullseye-security ma non piu' i .deb, e apt muore con 404 su meta' dei
+# pacchetti. Si punta tutto ad archive.debian.org, che resta in piedi; le
+# Release li' sono scadute, da cui Check-Valid-Until off.
+RUN printf 'deb http://archive.debian.org/debian bullseye main\ndeb http://archive.debian.org/debian bullseye-updates main\n' > /etc/apt/sources.list \
+    && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends vim nano curl debconf git apt-transport-https apt-utils \
+    && apt-get install -y --no-install-recommends vim nano fish curl debconf git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget zip unzip \
     libmagickwand-dev imagemagick ghostscript \
     gnupg gnupg1 gnupg2 ffmpeg \
-    supervisor libpq-dev libpng-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
+    supervisor libpq-dev libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
-    && docker-php-ext-install opcache pdo_mysql gd zip intl xmlrpc \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp \
+    && docker-php-ext-install -j"$(nproc)" opcache pdo_mysql gd zip intl xmlrpc \
     && pecl install redis-5.1.1 \
     && pecl install igbinary \
     && pecl install xdebug-2.9.0 \
@@ -41,6 +49,11 @@ RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     echo "it_IT.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
+
+# Chi entra con `docker compose exec <srv> bash` si ritrova in fish. La guardia
+# su PS1 lascia stare le shell non interattive (script, hook, comandi
+# schedulati), IN_FISH evita il loop se da fish si rilancia bash.
+RUN printf '\nif [ -n "$PS1" ] && [ -z "$IN_FISH" ] && [ -x /usr/bin/fish ]; then\n    export IN_FISH=1\n    exec /usr/bin/fish\nfi\n' >> /etc/bash.bashrc
 
 # var/ appartiene a www-data, che e' l'utente dei worker di php-fpm e quello con
 # cui girano i comandi schedulati. Le cartelle vanno create qui: supervisord ci
