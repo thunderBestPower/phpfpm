@@ -20,7 +20,7 @@ RUN apt-get update \
     supervisor libpq-dev libjpeg-dev libpng-dev libwebp-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install opcache pdo_pgsql gd exif zip intl ftp \
+    && docker-php-ext-install opcache pdo_pgsql gd exif zip intl ftp bcmath \
     && pecl install redis \
     && pecl install igbinary \
     && pecl install xdebug \
