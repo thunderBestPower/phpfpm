@@ -17,6 +17,7 @@
 | `ENABLE_MODE`     | `debug` | `xdebug.mode`: con `off` Xdebug viene rimosso                             |
 | `DOCKER_HOST_IP`  |         | `xdebug.client_host`                                                      |
 | `DOCKER_HOST_PORT`|         | `xdebug.client_port`                                                      |
+| `FIX_PERMISSIONS_DIRS` | `/app/var/log /app/var/cache /app/resources` | cartelle rese di `appuser` a ogni avvio (separate da spazio, solo sotto `/app`) |
 
 I valori vengono scritti nel `php.ini` dall'entrypoint al **primo avvio** del container:
 dopo averli cambiati serve ricrearlo (`docker compose up -d`), non basta `docker restart`.
@@ -44,3 +45,7 @@ services:
 - supervisord usa solo `resources/supervisord.conf` (`-c`): la config di sistema scrive in
   `/var/run` e `/var/log`, non scrivibili da `appuser`, e il container non partirebbe.
 - Log e pid di supervisord/php-fpm sono in `/app/var/log`, creata dall'entrypoint se manca.
+- A ogni avvio l'entrypoint lancia `fix-permissions` (via `sudo`, concesso ad `appuser` solo per
+  quello script) che rende di `appuser` i file di `FIX_PERMISSIONS_DIRS` con un altro proprietario:
+  log, cache e allegati creati da un'immagine con un uid diverso bloccherebbero l'avvio. Le share
+  di rete montate dentro quelle cartelle (es. cifs) non vengono attraversate.

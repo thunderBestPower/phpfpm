@@ -10,10 +10,12 @@ ENV PM_MAX_CHILDREN=5
 ENV ENABLE_XDEBUG=no
 # Off o debug https://xdebug.org/docs/all_settings#mode
 ENV ENABLE_MODE=debug
+# cartelle rese di appuser all'avvio (separate da spazio, solo sotto /app)
+ENV FIX_PERMISSIONS_DIRS="/app/var/log /app/var/cache /app/resources"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim nano curl git apt-utils \
-    build-essential locales acl mailutils wget zip unzip fish \
+    build-essential locales acl mailutils wget zip unzip fish sudo \
     gnupg ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libwebp-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
     ksh \
@@ -36,7 +38,8 @@ COPY resources/ /resources/
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && cp /resources/php.ini "$PHP_INI_DIR/conf.d/" \
     && cat /resources/www.conf >> /usr/local/etc/php-fpm.d/www.conf \
-    && cp /resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+    && cp /resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf \
+    && install -o root -g root -m 755 /resources/fix-permissions.sh /usr/local/bin/fix-permissions
 
 # Definiamo degli ARG con valori di default, che potrai sovrascrivere nel docker-compose
 ARG UID=1000
@@ -48,7 +51,10 @@ RUN groupadd -g "${GID}" appgroup \
     && usermod -aG www-data appuser \
     && mkdir /app \
     && chown -R appuser:appgroup /usr/local/etc/php/conf.d /app \
-    && chmod -R 775 /usr/local/etc/php/conf.d
+    && chmod -R 775 /usr/local/etc/php/conf.d \
+    && echo "appuser ALL=(root) NOPASSWD: /usr/local/bin/fix-permissions" > /etc/sudoers.d/fix-permissions \
+    && chmod 440 /etc/sudoers.d/fix-permissions \
+    && visudo -cf /etc/sudoers.d/fix-permissions
 
 WORKDIR /app
 USER appuser

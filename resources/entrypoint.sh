@@ -15,8 +15,9 @@ case "${ENABLE_XDEBUG,,}:${ENABLE_MODE,,}" in
         ;;
 esac
 
-# supervisord scrive log e pid qui: se la cartella non esiste non parte
-mkdir -p /app/var/log
+# crea /app/var/log e rende di appuser i file scritti con un altro uid
+# (senza virgolette: FIX_PERMISSIONS_DIRS è un elenco separato da spazi)
+sudo /usr/local/bin/fix-permissions ${FIX_PERMISSIONS_DIRS}
 
 # config dedicata: quella di sistema usa /var/run e /var/log, non scrivibili da appuser
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
