@@ -18,14 +18,27 @@ RUN apt-get update \
     build-essential locales acl mailutils wget zip unzip fish sudo \
     gnupg ffmpeg \
     supervisor libpq-dev libjpeg-dev libpng-dev libwebp-dev libssl-dev libcurl4-openssl-dev pkg-config libzip-dev libedit-dev zlib1g-dev libicu-dev g++ libxml2-dev \
-    ksh \
+    ksh freetds-bin freetds-dev freetds-common \
+    cups-client cups-bsd \
+    && ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/ \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install opcache pdo_pgsql gd exif zip intl ftp bcmath \
+    && docker-php-ext-install opcache pdo_pgsql pdo_dblib gd exif zip intl ftp bcmath \
     && pecl install redis \
     && pecl install igbinary \
     && pecl install xdebug \
     && pecl install apcu \
     && docker-php-ext-enable redis igbinary xdebug apcu \
+    && rm -rf /var/lib/apt/lists/* /tmp/pear
+
+ENV ACCEPT_EULA=Y
+
+# Driver Microsoft SQL Server per Debian 13 (base di php:8.4-fpm)
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft-2025.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && curl -fsSL https://packages.microsoft.com/config/debian/13/prod.list -o /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && apt-get install -y msodbcsql18 unixodbc unixodbc-dev \
+    && pecl install sqlsrv pdo_sqlsrv \
+    && docker-php-ext-enable sqlsrv pdo_sqlsrv \
     && rm -rf /var/lib/apt/lists/* /tmp/pear
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
@@ -46,9 +59,11 @@ ARG UID=1000
 ARG GID=1000
 
 # appuser deve poter modificare conf.d dall'entrypoint (sed su php.ini, rimozione xdebug)
+# gruppo lp per la stampante
 RUN groupadd -g "${GID}" appgroup \
     && useradd -m -l -u "${UID}" -g appgroup -s /usr/bin/fish appuser \
     && usermod -aG www-data appuser \
+    && usermod -aG lp appuser \
     && mkdir /app \
     && chown -R appuser:appgroup /usr/local/etc/php/conf.d /app \
     && chmod -R 775 /usr/local/etc/php/conf.d \

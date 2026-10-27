@@ -1,8 +1,9 @@
 # PHP-FPM 8.4
 
-- Include connect Postgres
+- Include connect Postgres e Microsoft SQL Server
 - Xdebug
-- Estensioni: opcache, pdo_pgsql, gd (JPEG, PNG, WebP), exif, zip, intl, ftp, bcmath, redis, igbinary, apcu
+- Stampa: `cups-client`/`cups-bsd` (`lp`, `lpr`), `appuser` nel gruppo `lp`
+- Estensioni: opcache, pdo_pgsql, pdo_dblib, sqlsrv, pdo_sqlsrv, gd (JPEG, PNG, WebP), exif, zip, intl, ftp, bcmath, redis, igbinary, apcu
 - Composer 2, supervisor, fish
 
 ## Variabili d'ambiente
@@ -49,3 +50,4 @@ services:
   quello script) che rende di `appuser` i file di `FIX_PERMISSIONS_DIRS` con un altro proprietario:
   log, cache e allegati creati da un'immagine con un uid diverso bloccherebbero l'avvio. Le share
   di rete montate dentro quelle cartelle (es. cifs) non vengono attraversate.
+- Driver SQL Server (`msodbcsql18`) dal repo Microsoft per Debian 13.
